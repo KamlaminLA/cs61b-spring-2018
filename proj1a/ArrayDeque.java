@@ -57,20 +57,12 @@ public class ArrayDeque<T> {
      */
     private void reSize(int newSize) {
         T[] newArray = (T[]) new Object[newSize];
-        int size = size();
-
-        if (left < right) {  // Only when all the element are add to right
-            for (int i = left, j = 0; i < right && j < size; i++, j++) {
-                newArray[j] = itemArray[i];
-            }
-        } else if (left > right) {
-            int j = 0;
-            for (int i = left; j < length - left; i++, j++) {
-                newArray[j] = itemArray[i];
-            }
-            for (int i = 0; j < size; i++, j++) {
-                newArray[j] = itemArray[i];
-            }
+        int i = 0;
+        int temp = left;
+        while(temp != right) {
+            newArray[i] = itemArray[temp];
+            temp += 1;
+            i += 1;
         }
         left = 0;
         right = size;
