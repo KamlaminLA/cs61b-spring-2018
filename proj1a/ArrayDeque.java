@@ -15,6 +15,7 @@ public class ArrayDeque<T> {
     /** size of the deque */
     private int size;
 
+    //ArrayDeque Constructor
     public ArrayDeque() {
         itemArray = (T[]) new Object[length];
         left = 0;
@@ -40,12 +41,21 @@ public class ArrayDeque<T> {
         }
         return index - 1;
     }
+    /** index plus one
+     * while index == module - 1, return 0
+     */
+    private int plusOne(int index, int module) {
+        if(index == module - 1) {
+            return 0;
+        }
+        return index + 1;
+    }
 
     /** double the size and make a new array.
       when we need to double our array size,
       we need to copy the item in the prev array to newArray.
      */
-    public void reSize(int newSize) {
+    private void reSize(int newSize) {
         T[] newArray = (T[]) new Object[newSize];
         int size = size();
 
@@ -58,7 +68,7 @@ public class ArrayDeque<T> {
             for (int i = left; j < length - left; i++, j++) {
                 newArray[j] = itemArray[i];
             }
-            for (int i = 0; j < size; i++, j ++) {
+            for (int i = 0; j < size; i++, j++) {
                 newArray[j] = itemArray[i];
             }
         }
@@ -71,11 +81,11 @@ public class ArrayDeque<T> {
     /** increase length size once the array have no enough space
      * to store the value
      */
-    public boolean isFull() {
+    private boolean isFull() {
         return size() == length - 1;
     }
 
-    public boolean isLowUsage() {
+    private boolean isLowUsage() {
         return size() >= 16 && length / size() > 4;
     }
 
@@ -128,38 +138,25 @@ public class ArrayDeque<T> {
 
      /** print out all the element in the deque */
      public void printDeque() {
-         if (size == 0){
-             System.out.println("No Element");
+         if (size == 0) {
+             System.out.println("Does not exist");
          }
-         int count = size;
-         if (left < right) {
-             for (int i = 0; i < count; i ++) {
-                 System.out.print(itemArray[i] + " ");
-             }
+         int temp = right;
+         for(int i = left; i != right; plusOne(i, length)) {
+             System.out.print(itemArray[i] + " ");
          }
-         if (right > left) {
-             for (int i = left; i < length; i ++) {
-                 System.out.print(itemArray[i] + " ");
-             }
-             for (int i = 0; i < right; i++) {
-                 System.out.print(itemArray[i]);
-             }
-         }
+
      }
      /** get the index item in the array */
      public T get(int index) {
-        if (size == 0 || index > size) {
+        if (size == 0 || index >= size) {
             return null;
         }
-        if (left < right) {
-            return itemArray[index];
-        } else if (right < left) {
-            if (index + left < length) {
-                return itemArray[index + left];
-            } else {
-                return itemArray[(index + left) % length]; // has special case
-            }
+        int temp = left;
+        for(int i = 0; i < index; i++) {
+            temp = plusOne(temp, length);
         }
-        return null;
+        return itemArray[temp];
      }
+
 }

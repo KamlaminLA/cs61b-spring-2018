@@ -1,6 +1,6 @@
 public class LinkedListDeque<T> {
-    /* make a inner class node */
-    public class Node {
+    /* make an inner class node */
+    private class Node {
         public T item;
         public Node next;
         public Node prev;
