@@ -25,7 +25,7 @@ public class TestArrayDequeGold {
             Integer actual = s1.removeLast();
             Integer expect = s2.removeLast();
             String mess = "" + "removeLast(" + expect + ")\n";
-            assertEquals(mess,actual, expect);
+            assertEquals(expect, actual);
         }
 
     }
