@@ -24,8 +24,8 @@ public class TestArrayDequeGold {
         for(int i = 0; i < 200; i++) {
             Integer actual = s1.removeLast();
             Integer expect = s2.removeLast();
-            assertEquals("Oh noooo!\nThis is bad:\n   removeLast should return " +
-                    expect + " ",actual, expect);
+            String mess = "" + "removeLast(" + expect + ")\n";
+            assertEquals(mess,actual, expect);
         }
 
     }
