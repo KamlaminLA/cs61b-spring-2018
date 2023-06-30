@@ -2,12 +2,12 @@ package hw2;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 public class PercolationStats {
-    public int N;
-    public int T;
-    public PercolationFactory pf;
-    double[] res;
-    double meanFromSample;
-    double sd;
+    private int N;
+    private int T;
+    private PercolationFactory pf;
+    private double[] res;
+    private double meanFromSample;
+    private double sd;
     // perform T times experiment in N-by-N grid
     public PercolationStats(int N, int T, PercolationFactory pf) {
         if(N <= 0 || T <= 0) {

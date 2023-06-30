@@ -6,7 +6,8 @@ public class Percolation {
     private boolean[][] grid;
     private int openSites;
     private int N;
-    private WeightedQuickUnionUF percolationWQU;  // created a WeightedQuickUnionUF as instance variable
+    // created a WeightedQuickUnionUF as instance variable
+    private WeightedQuickUnionUF percolationWQU;
     private WeightedQuickUnionUF percolationWQU2;
     private int topSentinel;      // topSentinel connect to the top N items;
     private int lowSentinel;      // lowSentinel connect to the low N items;
@@ -79,7 +80,7 @@ public class Percolation {
         return false;
     }
     // check whether the (row, col) is valid
-    private boolean validate (int row, int col) {
+    private boolean validate(int row, int col) {
         return row >= 0 && row < N && col >= 0 && col < N;
     }
     // is the site (row, col) open?
@@ -95,8 +96,10 @@ public class Percolation {
         if (!isOpen(row, col)) {
             return false;
         }
-        if (percolationWQU.connected(topSentinel, getID(row, col)) && percolationWQU2.connected(topSentinel, getID(row, col))) {
-            return true;
+        if (percolationWQU.connected(topSentinel, getID(row, col))) {
+            if (percolationWQU2.connected(topSentinel, getID(row, col))) {
+                return true;
+            }
         }
         return false;
     }
@@ -112,11 +115,7 @@ public class Percolation {
     }
 
     // use for unit testing
-    /* public static void main(String[] args) {
-        PercolationFactory pf = new PercolationFactory();
-        PercolationStats p = new PercolationStats(10, 2, pf);
+    public static void main(String[] args) {
 
-        double totalTime = 0;
-
-    } */
+    }
 }
