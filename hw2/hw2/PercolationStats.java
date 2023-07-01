@@ -37,11 +37,7 @@ public class PercolationStats {
 
     // sample standard deviation of percolation threshold
     public double stddev() {
-        double sum = 0;
-        for (double i : res) {
-            sum += Math.pow(i - meanFromSample, 2);
-        }
-        sd = Math.sqrt(sum / (T - 1));
+        sd = StdStats.stddev(res);
         return sd;
     }
 
