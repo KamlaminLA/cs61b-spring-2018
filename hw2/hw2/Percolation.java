@@ -116,8 +116,6 @@ public class Percolation {
 
     // use for unit testing
     public static void main(String[] args) {
-        PercolationFactory pf = new PercolationFactory();
-        PercolationStats p = new PercolationStats(50, 200, pf);
-        System.out.println(p.mean());
+
     }
 }

@@ -10,7 +10,7 @@ public class PercolationStats {
     private double sd;
     // perform T times experiment in N-by-N grid
     public PercolationStats(int N, int T, PercolationFactory pf) {
-        if(N <= 0 || T <= 0) {
+        if (N <= 0 || T <= 0) {
             throw new IllegalArgumentException("N or T must greater than 0");
         }
         this.N = N;
@@ -29,7 +29,7 @@ public class PercolationStats {
                     p.open(x / N, x % N);
                 }
             }
-            res[i] = p.numberOfOpenSites();
+            res[i] = p.numberOfOpenSites() / (double) (N * N);
         }
         meanFromSample = StdStats.mean(res);
         return meanFromSample;
