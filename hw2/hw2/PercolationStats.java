@@ -43,13 +43,16 @@ public class PercolationStats {
 
     // low endpoint of 95% confidence interval
     public double confidenceLow() {
-        double low = meanFromSample - (1.96 * sd / Math.sqrt(T));
+        double low = StdStats.mean(res) - (1.96 * StdStats.stddev(res) / Math.sqrt(T));
         return low;
     }
 
     //high endpoint of 95% confidence interval
+    // we can't just use the instance variable(sd and meanFromSample), because we may
+    // call the confidenceHigh() or low() method first, it will return 0, since
+    // sd and meanFromSample are not define yet
     public double confidenceHigh() {
-        double high = meanFromSample + (1.96 * sd / Math.sqrt(T));
+        double high = StdStats.mean(res) + (1.96 * StdStats.stddev(res) / Math.sqrt(T));
         return high;
     }
 }
