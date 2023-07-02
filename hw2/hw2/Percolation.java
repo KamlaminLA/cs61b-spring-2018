@@ -22,6 +22,7 @@ public class Percolation {
         topSentinel = N * N;
         lowSentinel = N * N + 1;
         grid = new boolean[N][N];
+        openSites = 0;
         for (int i = 0; i < N; i += 1) {
             for (int j = 0; j < N; j += 1) {
                 grid[i][j] = false;
@@ -36,9 +37,8 @@ public class Percolation {
         for (int i = N * (N - 1); i < N * N; i += 1) {
             percolationWQU.union(lowSentinel, i);
         }
-        openSites = 0;
-
     }
+
     // get the current site(row, col) id
     private int getID(int row, int col) {
         return row * N + col;
@@ -111,11 +111,15 @@ public class Percolation {
 
     // does the system percolates?
     public boolean percolates() {
+        if (openSites == 0) {
+            return false;
+        }
         return percolationWQU.connected(topSentinel, lowSentinel);
     }
 
     // use for unit testing
     public static void main(String[] args) {
-
+        Percolation p = new Percolation(1);
+        System.out.println(p.percolates());
     }
 }
