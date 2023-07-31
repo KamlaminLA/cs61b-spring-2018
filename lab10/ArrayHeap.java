@@ -123,31 +123,16 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      * Bubbles down the node currently at the given index.
      */
     private void sink(int index) {
+        if (!inBounds(index)) {
+            return;
+        }
         // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
         validateSinkSwimArg(index);
 
-        int leftIndex = leftIndex(index);
-        int rightIndex = rightIndex(index);
-
-        Node leftNode = getNode(leftIndex);
-        Node currentNode = getNode(index);
-        Node rightNode = getNode(rightIndex);
-
-        if (leftNode == null || rightNode == null) {
-            return;
-        }
-
-        if (leftNode.priority() > currentNode.priority()
-                && rightNode.priority() > currentNode.priority()) {
-            return;
-        }
-
-        if (leftNode.priority() < rightNode.priority()) {
-            swap(index, leftIndex);
-            sink(leftIndex);
-        } else {
-            swap(index, rightIndex);
-            sink(rightIndex);
+        int minChild = min(leftIndex(index), rightIndex(index));
+        if (minChild == min(minChild, index)) {
+            swap(minChild, index);
+            sink(minChild);
         }
     }
 
@@ -195,19 +180,12 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     @Override
     public T removeMin() {
         /* TODO: Your code here! */
-        swap(size, 1);
-
-        // remove the min
-        Node min = getNode(size);
-        contents[size] = null;
-        size--;
-
-        // sink the root
-        if (size > 0) {
-            sink(1);
-        }
-
-        return min.myItem;
+        T item = contents[1].myItem;
+        swap(1, size);
+        size -= 1;
+        sink(1);
+        contents[size + 1] = null;
+        return item;
     }
 
     /**
@@ -230,9 +208,13 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     @Override
     public void changePriority(T item, double priority) {
         /* TODO: Your code here! */
-        for (int i = 0; i < size; i += 1) {
+        for (int i = 0; i <= size; i += 1) {
             if (contents[i].myItem.equals(item)) {
                 contents[i].myPriority = priority;
+                // after given a new priority, the node may sink or swim
+                swim(i);
+                sink(i);
+                return;
             }
         }
     }
