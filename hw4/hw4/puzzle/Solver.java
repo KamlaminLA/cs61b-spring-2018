@@ -2,10 +2,9 @@ package hw4.puzzle;
 import edu.princeton.cs.algs4.MinPQ;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class Solver {
-    private class SearchNode implements Comparable<SearchNode>{
+    private class SearchNode implements Comparable<SearchNode> {
         private WorldState state;
         private int moves;
         private SearchNode prev;

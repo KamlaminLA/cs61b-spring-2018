@@ -105,7 +105,7 @@ public class Board implements WorldState {
     // get back the indices for x
     private int[] helper(int x) {
         int[] res = new int[2];
-        if (x % 2 == 0) {
+        if (N % 2 == 0) {
             res[0] = x / N;
             res[1] = x % N;
         } else {
@@ -144,6 +144,10 @@ public class Board implements WorldState {
     public int estimatedDistanceToGoal() {
         return estimate;
     }
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 
     /**
      * Returns true if this board's tile values are the same
@@ -151,6 +155,7 @@ public class Board implements WorldState {
      * @param y
      * @return
      */
+    @Override
     public boolean equals(Object y) {
         if (y == this) {
             return true;
@@ -167,7 +172,6 @@ public class Board implements WorldState {
         }
         return true;
     }
-
 
     /** Returns the string representation of the board. 
       * Uncomment this method. */
