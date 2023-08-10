@@ -41,7 +41,8 @@ public class Board implements WorldState {
      * @return
      */
     public int size() {
-        return this.N;
+        int length = N;
+        return length;
     }
 
     /**
@@ -107,7 +108,6 @@ public class Board implements WorldState {
      * @return
      */
     public int manhattan() {
-        int realDistance;
         int res = 0;
         int actualI;
         int actualJ;
@@ -117,9 +117,8 @@ public class Board implements WorldState {
                     continue;
                 } else if (tileAt(i, j) != i * N + j + 1) {
                     actualI = (tiles[i][j] - 1) / N;
-                    actualJ = (tiles[i][j] - 1) / N;
-                    realDistance = Math.abs(actualI + actualJ - i - j);
-                    res += realDistance;
+                    actualJ = (tiles[i][j] - 1) % N;
+                    res = Math.abs(actualI + actualJ - i - j);
                 }
             }
         }
@@ -154,9 +153,10 @@ public class Board implements WorldState {
         if (y == null || this.getClass() != y.getClass()) {
             return false;
         }
+        Board other = (Board) y;
         for (int i = 0; i < N; i += 1) {
             for (int j = 0; j < N; j += 1) {
-                if (this.tiles[i][j] != ((Board) y).tiles[i][j]) {
+                if (this.tiles[i][j] != other.tiles[i][j]) {
                     return false;
                 }
             }
