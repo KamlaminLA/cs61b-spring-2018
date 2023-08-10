@@ -3,8 +3,7 @@ import edu.princeton.cs.algs4.Queue;
 
 public class Board implements WorldState {
     private final int[][] tiles;
-    private int N;
-    private int estimate;
+    private int size;
     private final int BLANK = 0;
     /** Constructs a board from an N-by-N array of tiles where
      *  tiles[i][j] = tile at row i, column j
@@ -14,7 +13,8 @@ public class Board implements WorldState {
         if (tiles == null || tiles[0].length != tiles.length) {
             throw new IllegalArgumentException("tiles can't be null and has be be N * N");
         }
-        N = tiles[0].length;
+        size = tiles[0].length;
+        int N = tiles[0].length;
         this.tiles = new int[N][N];
         for (int i = 0; i < N; i += 1) {
             for (int j = 0; j < N; j += 1) {
@@ -30,6 +30,7 @@ public class Board implements WorldState {
      * @return
      */
     public int tileAt(int i, int j) {
+        int N = tiles[0].length;
         if (i >= N || i < 0 || j >= N || j < 0) {
             throw new IndexOutOfBoundsException("i must between 0 and N - 1");
         }
@@ -41,8 +42,7 @@ public class Board implements WorldState {
      * @return
      */
     public int size() {
-        int length = N;
-        return length;
+        return size;
     }
 
     /**
@@ -90,6 +90,7 @@ public class Board implements WorldState {
      * @return
      */
     public int hamming() {
+        int N = tiles[0].length;
         int res = 0;
         for (int i = 0; i < N; i += 1) {
             for (int j = 0; j < N; j += 1) {
@@ -108,21 +109,19 @@ public class Board implements WorldState {
      * @return
      */
     public int manhattan() {
+        int N = tiles[0].length;
         int res = 0;
-        int actualI;
-        int actualJ;
         for (int i = 0; i < N; i += 1) {
             for (int j = 0; j < N; j += 1) {
                 if (tileAt(i, j) == 0) {
                     continue;
                 } else if (tileAt(i, j) != i * N + j + 1) {
-                    actualI = (tiles[i][j] - 1) / N;
-                    actualJ = (tiles[i][j] - 1) % N;
-                    res = Math.abs(actualI + actualJ - i - j);
+                    int actualI = (tiles[i][j] - 1) / N;
+                    int actualJ = (tiles[i][j] - 1) % N;
+                    res += Math.abs(actualI + actualJ - i - j);
                 }
             }
         }
-        estimate = res;
         return res;
     }
 
@@ -147,6 +146,7 @@ public class Board implements WorldState {
      */
     @Override
     public boolean equals(Object y) {
+        int N = tiles[0].length;
         if (y == this) {
             return true;
         }
