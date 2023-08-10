@@ -41,7 +41,7 @@ public class Board implements WorldState {
      * @return
      */
     public int size() {
-        return N;
+        return this.N;
     }
 
     /**
@@ -102,18 +102,6 @@ public class Board implements WorldState {
         return res;
     }
 
-    // get back the indices for x
-    private int[] helper(int x) {
-        int[] res = new int[2];
-        if (N % 2 == 0) {
-            res[0] = x / N;
-            res[1] = x % N;
-        } else {
-            res[0] = x / N;
-            res[1] = x % N - 1;
-        }
-        return res;
-    }
     /**
      * Manhattan estimate described below
      * @return
@@ -121,13 +109,16 @@ public class Board implements WorldState {
     public int manhattan() {
         int realDistance;
         int res = 0;
+        int actualI;
+        int actualJ;
         for (int i = 0; i < N; i += 1) {
             for (int j = 0; j < N; j += 1) {
                 if (tileAt(i, j) == 0) {
                     continue;
                 } else if (tileAt(i, j) != i * N + j + 1) {
-                    int[] actual = helper(tileAt(i, j));
-                    realDistance = Math.abs(actual[0] + actual[1] - i - j);
+                    actualI = (tiles[i][j] - 1) / N;
+                    actualJ = (tiles[i][j] - 1) / N;
+                    realDistance = Math.abs(actualI + actualJ - i - j);
                     res += realDistance;
                 }
             }
@@ -142,7 +133,7 @@ public class Board implements WorldState {
      * @return
      */
     public int estimatedDistanceToGoal() {
-        return estimate;
+        return manhattan();
     }
     @Override
     public int hashCode() {
@@ -181,7 +172,7 @@ public class Board implements WorldState {
         s.append(N + "\n");
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                s.append(String.format("%2d ", tileAt(i,j)));
+                s.append(String.format("%2d ", tileAt(i, j)));
             }
             s.append("\n");
         }
