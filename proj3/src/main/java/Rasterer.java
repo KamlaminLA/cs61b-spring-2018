@@ -8,7 +8,21 @@ import java.util.Map;
  * not draw the output correctly.
  */
 public class Rasterer {
+    /**
+     * The root upper left/lower right longitudes and latitudes represent the bounding box of
+     * the root tile, as the images in the img/ folder are scraped.
+     * Longitude == x-axis; latitude == y-axis.
+     * the static variables below are for the d0_x0_y0
+     */
+    public static final double ROOT_ULLAT = 37.892195547244356, ROOT_ULLON = -122.2998046875,
+            ROOT_LRLAT = 37.82280243352756, ROOT_LRLON = -122.2119140625;
 
+    /** Each tile is 256x256 pixels. */
+    public static final int TILE_SIZE = 256;
+    public static String[][] render_grid;
+    public double wholeMapLon = ROOT_LRLON - ROOT_ULLON;
+    public double wholeMapLat = ROOT_ULLAT - ROOT_LRLAT;
+    public boolean query_success;
     public Rasterer() {
         // YOUR CODE HERE
     }
@@ -42,11 +56,104 @@ public class Rasterer {
      *                    forget to set this to true on success! <br>
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
-        // System.out.println(params);
+        System.out.println(params);
+        query_success = validInput(params);
         Map<String, Object> results = new HashMap<>();
-        System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
-                           + "your browser.");
+        //now we figure out the correct depth for the query
+        double LonDPP = (double) ((params.get("lrlon") - params.get("ullon")) * 288200 / params.get("w"));
+        System.out.println(LonDPP);
+        int depth = getLevel(LonDPP);
+        System.out.println(depth);
+        results.put("depth", depth);
+        //how can we know which tile we choose to use?
+        int ulx = (int) ((params.get("ullon") - ROOT_ULLON ) / (wholeMapLon / Math.pow(2, depth)));
+        int lrx = (int) ((params.get("lrlon") - ROOT_ULLON) / (wholeMapLon / Math.pow(2, depth)));
+        int uly = (int) ((ROOT_ULLAT - params.get("ullat")) / (wholeMapLat / Math.pow(2, depth)));
+        int lry = (int) ((ROOT_ULLAT - params.get("lrlat")) / (wholeMapLat / Math.pow(2, depth)));
+        System.out.println(ulx);
+        System.out.println(uly);
+        System.out.println(lrx);
+        System.out.println(lry);
+        int totalY = lrx - ulx + 1;
+        int totalX = lry - uly + 1;
+
+        if (totalX > Math.pow(2, depth)) {
+            totalX = (int)(Math.pow(2, depth));
+        }
+        if (totalY > Math.pow(2, depth)) {
+            totalY = (int)(Math.pow(2, depth));
+        }
+        System.out.println(totalX);
+        System.out.println(totalY);
+        render_grid = new String[totalX][totalY];
+
+        int tempX = ulx;
+        int tempY = uly;
+        for (int i = 0; i < totalX; i += 1) {
+            for (int j = 0; j < totalY; j += 1) {
+                String x = "d" + depth + "_x" + tempX + "_y" + tempY + ".png";
+                render_grid[i][j] = x;
+                tempX += 1;
+            }
+            tempX = ulx;
+            tempY += 1;
+        }
+        results.put("render_grid", render_grid);
+        // add raster_ul_lon, raster_ul_lat, raster_lr_lon and raster_lr_lat
+        double raster_ul_lon = (wholeMapLon / Math.pow(2, depth)) * ulx + ROOT_ULLON;
+        double raster_lr_lon = (wholeMapLon / Math.pow(2, depth)) * (lrx + 1) + ROOT_ULLON;
+        double raster_ul_lat = (wholeMapLat / Math.pow(2, depth)) * uly + ROOT_ULLAT;
+        double raster_lr_lat = (wholeMapLat / Math.pow(2, depth)) * (lry + 1) + ROOT_ULLAT;
+        results.put("raster_ul_lon", raster_ul_lon);
+        results.put("raster_lr_lon", raster_lr_lon);
+        results.put("raster_ul_lat", raster_ul_lat);
+        results.put("raster_lr_lat", raster_lr_lat);
+        results.put("query_success", query_success);
         return results;
     }
+
+    /**
+     * method to determine depth
+     * @param inputWidth
+     * @return depth
+     */
+    private int getLevel(double inputWidth) {
+        double res = 99;
+        int level = 0;
+        while (res > inputWidth) {
+            if (level >= 7) {
+                return 7;
+            }
+            res = res / Math.pow(2, 1);
+            level += 1;
+        }
+        return level;
+    }
+    // valid the user's input
+    private boolean validInput(Map<String, Double> params) {
+        if ((params.get("ullon") - ROOT_ULLON) > 1 || (ROOT_ULLAT - params.get("ullat")) > 1) {
+            return false;
+        }
+        if ((params.get("lrlon") - ROOT_ULLON) > 1 || (ROOT_ULLAT - params.get("lrlat")) > 1) {
+            return false;
+        }
+        if (params.get("ullon") > params.get("lrlon") || params.get("lrlat") > params.get("ullat")) {
+            return false;
+        }
+        return true;
+    }
+    /** Test Only
+    public static void main(String[] args) {
+        Rasterer r = new Rasterer();
+        Map<String, Double> map = new HashMap();
+        map.put("ullon", -122.3027284165759);
+        map.put("lrlon", -122.20908713544797);
+        map.put("w", 305.0);
+        map.put("h", 300.0);
+        map.put("ullat", 37.88708748276975);
+        map.put("lrlat", 37.848731523430196);
+        r.getMapRaster(map);
+    }
+     */
 
 }
