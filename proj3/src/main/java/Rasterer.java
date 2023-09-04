@@ -19,14 +19,8 @@ public class Rasterer {
 
     /** Each tile is 256x256 pixels. */
     public static final int TILE_SIZE = 256;
-    private String[][] render_grid;
     private final double wholeMapLon = ROOT_LRLON - ROOT_ULLON;
     private final double wholeMapLat = ROOT_ULLAT - ROOT_LRLAT;
-    private boolean query_success;
-    private double raster_ul_lon;
-    private double raster_lr_lon;
-    private double raster_ul_lat;
-    private double raster_lr_lat;
     public Rasterer() {
         // YOUR CODE HERE
     }
@@ -61,7 +55,7 @@ public class Rasterer {
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
         System.out.println(params);
-        query_success = validInput(params);
+        boolean query_success = validInput(params);
         Map<String, Object> results = new HashMap<>();
         //now we figure out the correct depth for the query
         double lonDPP = ((params.get("lrlon") - params.get("ullon")) * 288200 / params.get("w"));
@@ -89,7 +83,7 @@ public class Rasterer {
         }
         System.out.println(totalX);
         System.out.println(totalY);
-        render_grid = new String[totalX][totalY];
+        String[][] render_grid = new String[totalX][totalY];
 
         int tempX = ulx;
         int tempY = uly;
@@ -106,10 +100,10 @@ public class Rasterer {
         System.out.println(tempY);
         results.put("render_grid", render_grid);
         // add raster_ul_lon, raster_ul_lat, raster_lr_lon and raster_lr_lat
-        raster_ul_lon = ROOT_ULLON + (wholeMapLon / Math.pow(2, depth)) * ulx;
-        raster_lr_lon = ROOT_ULLON + (wholeMapLon / Math.pow(2, depth)) * (ulx + totalY);
-        raster_ul_lat = ROOT_ULLAT - (wholeMapLat / Math.pow(2, depth)) * uly;
-        raster_lr_lat = ROOT_ULLAT - (wholeMapLat / Math.pow(2, depth)) * (tempY);
+        double raster_ul_lon = ROOT_ULLON + (wholeMapLon / Math.pow(2, depth)) * ulx;
+        double raster_lr_lon = ROOT_ULLON + (wholeMapLon / Math.pow(2, depth)) * (ulx + totalY);
+        double raster_ul_lat = ROOT_ULLAT - (wholeMapLat / Math.pow(2, depth)) * uly;
+        double raster_lr_lat = ROOT_ULLAT - (wholeMapLat / Math.pow(2, depth)) * (tempY);
         results.put("raster_ul_lon", raster_ul_lon);
         results.put("raster_lr_lon", raster_lr_lon);
         results.put("raster_ul_lat", raster_ul_lat);
