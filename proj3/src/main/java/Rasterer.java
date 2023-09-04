@@ -19,10 +19,14 @@ public class Rasterer {
 
     /** Each tile is 256x256 pixels. */
     public static final int TILE_SIZE = 256;
-    public static String[][] render_grid;
-    public double wholeMapLon = ROOT_LRLON - ROOT_ULLON;
-    public double wholeMapLat = ROOT_ULLAT - ROOT_LRLAT;
-    public boolean query_success;
+    private String[][] render_grid;
+    private final double wholeMapLon = ROOT_LRLON - ROOT_ULLON;
+    private final double wholeMapLat = ROOT_ULLAT - ROOT_LRLAT;
+    private boolean query_success;
+    private double raster_ul_lon;
+    private double raster_lr_lon;
+    private double raster_ul_lat;
+    private double raster_lr_lat;
     public Rasterer() {
         // YOUR CODE HERE
     }
@@ -60,13 +64,13 @@ public class Rasterer {
         query_success = validInput(params);
         Map<String, Object> results = new HashMap<>();
         //now we figure out the correct depth for the query
-        double LonDPP = (double) ((params.get("lrlon") - params.get("ullon")) * 288200 / params.get("w"));
-        System.out.println(LonDPP);
-        int depth = getLevel(LonDPP);
+        double lonDPP = ((params.get("lrlon") - params.get("ullon")) * 288200 / params.get("w"));
+        System.out.println(lonDPP);
+        int depth = getLevel(lonDPP);
         System.out.println(depth);
         results.put("depth", depth);
         //how can we know which tile we choose to use?
-        int ulx = (int) ((params.get("ullon") - ROOT_ULLON ) / (wholeMapLon / Math.pow(2, depth)));
+        int ulx = (int) ((params.get("ullon") - ROOT_ULLON) / (wholeMapLon / Math.pow(2, depth)));
         int lrx = (int) ((params.get("lrlon") - ROOT_ULLON) / (wholeMapLon / Math.pow(2, depth)));
         int uly = (int) ((ROOT_ULLAT - params.get("ullat")) / (wholeMapLat / Math.pow(2, depth)));
         int lry = (int) ((ROOT_ULLAT - params.get("lrlat")) / (wholeMapLat / Math.pow(2, depth)));
@@ -78,10 +82,10 @@ public class Rasterer {
         int totalX = lry - uly + 1;
 
         if (totalX > Math.pow(2, depth)) {
-            totalX = (int)(Math.pow(2, depth));
+            totalX = (int) (Math.pow(2, depth));
         }
         if (totalY > Math.pow(2, depth)) {
-            totalY = (int)(Math.pow(2, depth));
+            totalY = (int) (Math.pow(2, depth));
         }
         System.out.println(totalX);
         System.out.println(totalY);
@@ -102,10 +106,10 @@ public class Rasterer {
         System.out.println(tempY);
         results.put("render_grid", render_grid);
         // add raster_ul_lon, raster_ul_lat, raster_lr_lon and raster_lr_lat
-        double raster_ul_lon = ROOT_ULLON + (wholeMapLon / Math.pow(2, depth)) * ulx;
-        double raster_lr_lon = ROOT_ULLON + (wholeMapLon / Math.pow(2, depth)) * (ulx + totalY);
-        double raster_ul_lat = ROOT_ULLAT - (wholeMapLat / Math.pow(2, depth)) * uly;
-        double raster_lr_lat = ROOT_ULLAT - (wholeMapLat / Math.pow(2, depth)) * (tempY);
+        raster_ul_lon = ROOT_ULLON + (wholeMapLon / Math.pow(2, depth)) * ulx;
+        raster_lr_lon = ROOT_ULLON + (wholeMapLon / Math.pow(2, depth)) * (ulx + totalY);
+        raster_ul_lat = ROOT_ULLAT - (wholeMapLat / Math.pow(2, depth)) * uly;
+        raster_lr_lat = ROOT_ULLAT - (wholeMapLat / Math.pow(2, depth)) * (tempY);
         results.put("raster_ul_lon", raster_ul_lon);
         results.put("raster_lr_lon", raster_lr_lon);
         results.put("raster_ul_lat", raster_ul_lat);
@@ -139,7 +143,10 @@ public class Rasterer {
         if ((params.get("lrlon") - ROOT_ULLON) > 1 || (ROOT_ULLAT - params.get("lrlat")) > 1) {
             return false;
         }
-        if (params.get("ullon") > params.get("lrlon") || params.get("lrlat") > params.get("ullat")) {
+        if (params.get("ullon") > params.get("lrlon")) {
+            return false;
+        }
+        if (params.get("lrlat") > params.get("ullat")) {
             return false;
         }
         return true;
