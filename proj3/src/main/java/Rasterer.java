@@ -100,8 +100,8 @@ public class Rasterer {
         }
         results.put("render_grid", render_grid);
         // add raster_ul_lon, raster_ul_lat, raster_lr_lon and raster_lr_lat
-        double raster_ul_lon = (wholeMapLon / Math.pow(2, depth)) * ulx - ROOT_ULLON;
-        double raster_lr_lon = (wholeMapLon / Math.pow(2, depth)) * (tempX) - ROOT_ULLON;
+        double raster_ul_lon = ROOT_ULLON + (wholeMapLon / Math.pow(2, depth)) * ulx;
+        double raster_lr_lon = ROOT_ULLON + (wholeMapLon / Math.pow(2, depth)) * (tempX);
         double raster_ul_lat = ROOT_ULLAT - (wholeMapLat / Math.pow(2, depth)) * uly;
         double raster_lr_lat = ROOT_ULLAT - (wholeMapLat / Math.pow(2, depth)) * (tempY);
         results.put("raster_ul_lon", raster_ul_lon);
@@ -142,7 +142,7 @@ public class Rasterer {
         }
         return true;
     }
-    /**
+
     public static void main(String[] args) {
         Rasterer r = new Rasterer();
         Map<String, Double> map = new HashMap();
@@ -154,5 +154,5 @@ public class Rasterer {
         map.put("lrlat", 37.850187716549755);
         System.out.println(r.getMapRaster(map));
     }
-    */
+
 }
