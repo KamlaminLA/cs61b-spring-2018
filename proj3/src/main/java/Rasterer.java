@@ -21,12 +21,12 @@ public class Rasterer {
     public static final int TILE_SIZE = 256;
     private final double wholeMapLon = ROOT_LRLON - ROOT_ULLON;
     private final double wholeMapLat = ROOT_ULLAT - ROOT_LRLAT;
-    private static double raster_ul_lon;
-    private static double raster_lr_lon;
-    private static double raster_ul_lat;
-    private static double raster_lr_lat;
-    private static boolean query_success;
-    private static String[][] render_grid;
+    private static double RASTER_UL_LON;
+    private static double RASTER_LR_LON;
+    private static double RASTER_UL_LAT;
+    private static double RASTER_LR_LAT;
+    private static boolean QUERY_SUCCESS;
+    private static String[][] RENDER_GRID;
     public Rasterer() {
         // YOUR CODE HERE
     }
@@ -61,23 +61,17 @@ public class Rasterer {
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
         System.out.println(params);
-        query_success = validInput(params);
+        QUERY_SUCCESS = validInput(params);
         Map<String, Object> results = new HashMap<>();
         //now we figure out the correct depth for the query
         double lonDPP = ((params.get("lrlon") - params.get("ullon")) * 288200 / params.get("w"));
-        System.out.println(lonDPP);
         int depth = getLevel(lonDPP);
-        System.out.println(depth);
         results.put("depth", depth);
         //how can we know which tile we choose to use?
         int ulx = (int) ((params.get("ullon") - ROOT_ULLON) / (wholeMapLon / Math.pow(2, depth)));
         int lrx = (int) ((params.get("lrlon") - ROOT_ULLON) / (wholeMapLon / Math.pow(2, depth)));
         int uly = (int) ((ROOT_ULLAT - params.get("ullat")) / (wholeMapLat / Math.pow(2, depth)));
         int lry = (int) ((ROOT_ULLAT - params.get("lrlat")) / (wholeMapLat / Math.pow(2, depth)));
-        System.out.println(ulx);
-        System.out.println(uly);
-        System.out.println(lrx);
-        System.out.println(lry);
         int totalY = lrx - ulx + 1;
         int totalX = lry - uly + 1;
 
@@ -87,34 +81,30 @@ public class Rasterer {
         if (totalY > Math.pow(2, depth)) {
             totalY = (int) (Math.pow(2, depth));
         }
-        System.out.println(totalX);
-        System.out.println(totalY);
-        render_grid = new String[totalX][totalY];
 
+        RENDER_GRID = new String[totalX][totalY];
         int tempX = ulx;
         int tempY = uly;
         for (int i = 0; i < totalX; i += 1) {
             for (int j = 0; j < totalY; j += 1) {
                 String x = "d" + depth + "_x" + tempX + "_y" + tempY + ".png";
-                render_grid[i][j] = x;
+                RENDER_GRID[i][j] = x;
                 tempX += 1;
             }
             tempX = ulx;
             tempY += 1;
         }
-        System.out.println(tempX);
-        System.out.println(tempY);
-        results.put("render_grid", render_grid);
+        results.put("render_grid", RENDER_GRID);
         // add raster_ul_lon, raster_ul_lat, raster_lr_lon and raster_lr_lat
-        raster_ul_lon = ROOT_ULLON + (wholeMapLon / Math.pow(2, depth)) * ulx;
-        raster_lr_lon = ROOT_ULLON + (wholeMapLon / Math.pow(2, depth)) * (ulx + totalY);
-        raster_ul_lat = ROOT_ULLAT - (wholeMapLat / Math.pow(2, depth)) * uly;
-        raster_lr_lat = ROOT_ULLAT - (wholeMapLat / Math.pow(2, depth)) * (tempY);
-        results.put("raster_ul_lon", raster_ul_lon);
-        results.put("raster_lr_lon", raster_lr_lon);
-        results.put("raster_ul_lat", raster_ul_lat);
-        results.put("raster_lr_lat", raster_lr_lat);
-        results.put("query_success", query_success);
+        RASTER_UL_LON = ROOT_ULLON + (wholeMapLon / Math.pow(2, depth)) * ulx;
+        RASTER_LR_LON = ROOT_ULLON + (wholeMapLon / Math.pow(2, depth)) * (ulx + totalY);
+        RASTER_UL_LAT = ROOT_ULLAT - (wholeMapLat / Math.pow(2, depth)) * uly;
+        RASTER_LR_LAT = ROOT_ULLAT - (wholeMapLat / Math.pow(2, depth)) * (tempY);
+        results.put("raster_ul_lon", RASTER_UL_LON);
+        results.put("raster_lr_lon", RASTER_LR_LON);
+        results.put("raster_ul_lat", RASTER_UL_LAT);
+        results.put("raster_lr_lat", RASTER_LR_LAT);
+        results.put("query_success", QUERY_SUCCESS);
         return results;
     }
 
