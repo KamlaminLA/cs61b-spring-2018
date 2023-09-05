@@ -91,7 +91,9 @@ public class QuickSort {
         students.enqueue("Lucy");
         students.enqueue("Judy");
         System.out.println(students);
+        System.out.println(students.size());
         Queue<String> sortedQueue = quickSort(students);
+        System.out.println(students);
         System.out.println(sortedQueue);
     }
 }
