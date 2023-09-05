@@ -34,8 +34,16 @@ public class MergeSort {
     /** Returns a queue of queues that each contain one item from items. */
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items) {
-        // Your code here!
-        return null;
+        // below new Queue's Queue haven't instantiated yet.
+        // will get null if not instantiate
+        Queue<Queue<Item>> queue = new Queue<>();
+        int size = items.size();
+        for (int i = 0; i < size; i += 1) {
+            Queue<Item> tempQueue = new Queue<>();
+            tempQueue.enqueue(items.dequeue());
+            queue.enqueue(tempQueue);
+        }
+        return queue;
     }
 
     /**
@@ -47,20 +55,50 @@ public class MergeSort {
      *
      * @param   q1  A Queue in sorted order from least to greatest.
      * @param   q2  A Queue in sorted order from least to greatest.
-     * @return      A Queue containing all of the q1 and q2 in sorted order, from least to
+     * @return      A Queue containing all the q1 and q2 in sorted order, from least to
      *              greatest.
      *
      */
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2) {
         // Your code here!
-        return null;
+        Queue<Item> queue = new Queue<>();
+        while (!q1.isEmpty() || !q2.isEmpty()) {
+            Item smallestItem = getMin(q1, q2);
+            queue.enqueue(smallestItem);
+        }
+        return queue;
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
         // Your code here!
-        return items;
+        Queue<Queue<Item>> tempQueue = makeSingleItemQueues(items);
+        //After tempQueue.size == 1, every item is now sorted in the first queue of tempQueue
+        while (tempQueue.size() > 1) {
+            Queue<Item> q1 = tempQueue.dequeue();
+            Queue<Item> q2 = tempQueue.dequeue();
+            tempQueue.enqueue(mergeSortedQueues(q1, q2));
+        }
+
+        Queue<Item> sortedQueue = tempQueue.dequeue();
+        return sortedQueue;
     }
+
+    /** For test the mergeSort.  */
+    public static void main(String[] args) {
+        Queue<String> students = new Queue<>();
+        students.enqueue("Felix");
+        students.enqueue("Alice");
+        students.enqueue("Cindy");
+        students.enqueue("Lucy");
+        students.enqueue("Judy");
+        System.out.println(students);
+        Queue<String> sorted = MergeSort.mergeSort(students);
+        // The queue "students" is now empty since we modified it
+        System.out.println(students);
+        System.out.println(sorted);
+    }
+
 }
