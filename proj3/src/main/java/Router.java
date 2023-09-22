@@ -1,5 +1,4 @@
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,10 +24,70 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        return null; // FIXME
+        long stID = g.closest(stlon, stlat);
+        long endID = g.closest(destlon, destlat);
+        GraphDB.Node startNode = new GraphDB.Node(stID, g.lat(stID), g.lon(stID));
+        GraphDB.Node endNode = new GraphDB.Node(endID, g.lat(stID), g.lon(endID));
+        PriorityQueue<Long> pq = new PriorityQueue<>(g.getNodeComparator());
+        List<Long> res = new ArrayList<>();
+        //set to check no duplicate node in the pq
+        Set<Long> visited = new HashSet<>();
+        //use a hash map to keep track the node connection (Long to Long)
+        Map<Long, Long> edgeTo = new HashMap<>();
+        // change all the nodes with distTo == Math.Double
+        for (Long node : g.vertices()) {
+            g.nodes.get(node).distTo = Double.MAX_VALUE;
+        }
+        g.nodes.get(stID).distTo = 0;
+        pq.add(stID);
+        while (!pq.isEmpty()) {
+            long v = pq.poll();
+            if (visited.contains(v)) {
+                continue;
+            }
+            if (v == endID) {
+                break;
+            }
+            visited.add(v);
+            for (Long w : g.adjacent(v)) {
+                relax(g, edgeTo, pq, v, w, endID);
+            }
+        }
+        res.add(endID);
+        while (endID != stID) {
+            if (edgeTo.get(endID) == null) {
+                return new ArrayList<>();
+            }
+            res.add(edgeTo.get(endID));
+            endID = edgeTo.get(endID);
+        }
+        for (Long id : g.nodes.keySet()) {
+            g.nodes.get(id).priority = 0;
+        }
+        return res;
     }
 
+    private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, long v, long w, long endID) {
+        if (g.nodes.get(v).distTo + g.distance(v, w) < g.nodes.get(w).distTo) {
+            g.nodes.get(w).distTo = g.nodes.get(v).distTo + g.distance(v, w);
+            // A* search
+            g.nodes.get(w).priority = g.nodes.get(w).distTo + g.distance(w, endID);
+            pq.add(w);
+            edgeTo.put(w, v);
+        }
+    }
+
+    /**public static class Vertex implements Comparable<Vertex> {
+        long id;
+
+        @Override
+        public int compareTo(Vertex o) {
+
+        }
+    }*/
+
     /**
+     * Optional!!
      * Create the list of directions corresponding to a route on the graph.
      * @param g The graph to use.
      * @param route The route to translate into directions. Each element

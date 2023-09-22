@@ -6,7 +6,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -41,7 +41,59 @@ public class GraphDB {
         }
         clean();
     }
+    // Map to store Nodes with their IDs
+    Map<Long, Node> nodes = new HashMap<>();
+    // Map to store ways with their IDs
+    Map<Long, Set<Long>> neighbors = new HashMap<>();
 
+    public static class Node {
+        long id;
+        double lat;
+        double lon;
+        String name;
+        Set<Long> adj;
+        double priority = 0;
+        double distTo;
+        public Node(long id, double lat, double lon) {
+            this.id = id;
+            this.lat = lat;
+            this.lon = lon;
+            this.adj = new HashSet<>();
+        }
+    }
+    public class NodeComparator implements Comparator<Long> {
+        @Override
+        public int compare(Long v, Long w) {
+            // use Double's default compare method
+            return Double.compare(nodes.get(v).priority, nodes.get((w)).priority);
+        }
+    }
+    public Comparator<Long> getNodeComparator() {
+        NodeComparator comparator = new NodeComparator();
+        return comparator;
+    }
+    public void addNode(long id, Node node) {
+        nodes.put(id, node);
+    }
+
+    public static class Way {
+        long id;
+        String wayType;
+        Set<Long> nodeSet = new HashSet<>();
+        public Way(long id, String wayType) {
+            this.id = id;
+            this.wayType = wayType;
+        }
+
+    }
+
+    public void addWay(Way way) {
+        for (Long id : way.nodeSet) {
+            if (!neighbors.containsKey(id)) {
+                neighbors.put(id, way.nodeSet);
+            }
+        }
+    }
     /**
      * Helper to process strings into their "cleaned" form, ignoring punctuation and capitalization.
      * @param s Input string.
@@ -58,6 +110,13 @@ public class GraphDB {
      */
     private void clean() {
         // TODO: Your code here.
+        Iterator<Long> iterator = nodes.keySet().iterator();
+        while(iterator.hasNext()) {
+            Long id = iterator.next();
+            if (!neighbors.containsKey(id)) {
+                iterator.remove();
+            }
+        }
     }
 
     /**
@@ -66,7 +125,7 @@ public class GraphDB {
      */
     Iterable<Long> vertices() {
         //YOUR CODE HERE, this currently returns only an empty list.
-        return new ArrayList<Long>();
+        return nodes.keySet();
     }
 
     /**
@@ -75,7 +134,7 @@ public class GraphDB {
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        return null;
+        return neighbors.get(v);
     }
 
     /**
@@ -136,7 +195,16 @@ public class GraphDB {
      * @return The id of the node in the graph closest to the target.
      */
     long closest(double lon, double lat) {
-        return 0;
+        long id = 0;
+        double dist = Double.MAX_VALUE;
+        for (Node node : nodes.values()) {
+            double currDist = distance(lon, lat, node.lon, node.lat);
+            if (currDist < dist) {
+                dist = currDist;
+                id = node.id;
+            }
+        }
+        return id;
     }
 
     /**
@@ -145,7 +213,7 @@ public class GraphDB {
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return 0;
+        return nodes.get(v).lon;
     }
 
     /**
@@ -154,6 +222,6 @@ public class GraphDB {
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return 0;
+        return nodes.get(v).lat;
     }
 }
