@@ -28,7 +28,6 @@ public class Rasterer {
     private static boolean QUERY_SUCCESS;
     private static String[][] RENDER_GRID;
     public Rasterer() {
-        // YOUR CODE HERE
     }
 
     /**
