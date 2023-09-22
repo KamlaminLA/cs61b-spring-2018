@@ -34,8 +34,10 @@ public class Router {
         Set<Long> visited = new HashSet<>();
         //use a hash map to keep track the node connection (Long to Long)
         Map<Long, Long> edgeTo = new HashMap<>();
+        res.add(endID);
+        return res;
         // change all the nodes with distTo == Math.Double
-        for (Long node : g.vertices()) {
+        /**for (Long node : g.vertices()) {
             g.nodes.get(node).distTo = Double.MAX_VALUE;
         }
         g.nodes.get(stID).distTo = 0;
@@ -64,7 +66,7 @@ public class Router {
         for (Long id : g.nodes.keySet()) {
             g.nodes.get(id).priority = 0;
         }
-        return res;
+        return res;*/
     }
 
     private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, long v, long w, long endID) {
