@@ -53,7 +53,7 @@ public class GraphDB {
         String name;
         Set<Long> adj;
         double priority = 0;
-        double distTo;
+        double distTo = 0;
         public Node(long id, double lat, double lon) {
             this.id = id;
             this.lat = lat;
@@ -79,7 +79,7 @@ public class GraphDB {
     public static class Way {
         long id;
         String wayType;
-        Set<Long> nodeSet = new HashSet<>();
+        List<Long> nodeSet = new ArrayList<>();
         public Way(long id, String wayType) {
             this.id = id;
             this.wayType = wayType;
@@ -88,9 +88,23 @@ public class GraphDB {
     }
 
     public void addWay(Way way) {
-        for (Long id : way.nodeSet) {
-            if (!neighbors.containsKey(id)) {
-                neighbors.put(id, way.nodeSet);
+        for (int i = 0; i < way.nodeSet.size() - 1; i += 1) {
+            Long currentNodeId = way.nodeSet.get(i);
+            Long nextNodeId = way.nodeSet.get(i + 1);
+
+            if (neighbors.containsKey(currentNodeId)) {
+                neighbors.get(currentNodeId).add(nextNodeId);
+            } else {
+                Set<Long> temp = new HashSet<>();
+                temp.add(nextNodeId);
+                neighbors.put(currentNodeId, temp);
+            }
+            if (neighbors.containsKey(nextNodeId)) {
+                neighbors.get(nextNodeId).add(currentNodeId);
+            } else {
+                Set<Long> temp = new HashSet<>();
+                temp.add(currentNodeId);
+                neighbors.put(nextNodeId, temp);
             }
         }
     }

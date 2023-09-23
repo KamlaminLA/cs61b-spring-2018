@@ -26,18 +26,14 @@ public class Router {
                                           double destlon, double destlat) {
         long stID = g.closest(stlon, stlat);
         long endID = g.closest(destlon, destlat);
-        GraphDB.Node startNode = new GraphDB.Node(stID, g.lat(stID), g.lon(stID));
-        GraphDB.Node endNode = new GraphDB.Node(endID, g.lat(stID), g.lon(endID));
         PriorityQueue<Long> pq = new PriorityQueue<>(g.getNodeComparator());
-        List<Long> res = new ArrayList<>();
+        List<Long> res = new LinkedList<>();
         //set to check no duplicate node in the pq
         Set<Long> visited = new HashSet<>();
         //use a hash map to keep track the node connection (Long to Long)
         Map<Long, Long> edgeTo = new HashMap<>();
-        res.add(endID);
-        return res;
         // change all the nodes with distTo == Math.Double
-        /**for (Long node : g.vertices()) {
+        for (Long node : g.vertices()) {
             g.nodes.get(node).distTo = Double.MAX_VALUE;
         }
         g.nodes.get(stID).distTo = 0;
@@ -58,7 +54,7 @@ public class Router {
         res.add(endID);
         while (endID != stID) {
             if (edgeTo.get(endID) == null) {
-                return new ArrayList<>();
+                return new LinkedList<>();
             }
             res.add(edgeTo.get(endID));
             endID = edgeTo.get(endID);
@@ -66,7 +62,9 @@ public class Router {
         for (Long id : g.nodes.keySet()) {
             g.nodes.get(id).priority = 0;
         }
-        return res;*/
+        // This is a method return nothing (void), but our List was reversed already
+        Collections.reverse(res);
+        return res;
     }
 
     private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, long v, long w, long endID) {
@@ -220,5 +218,12 @@ public class Router {
         public int hashCode() {
             return Objects.hash(direction, way, distance);
         }
+    }
+
+    public static void main(String[] args) {
+        String OSM_DB_PATH = "../library-sp18/data/berkeley-2018.osm.xml";
+        GraphDB g = new GraphDB(OSM_DB_PATH);
+        //System.out.println(g.adjacent(956454340));
+        System.out.println(shortestPath(g,-122.29454113685313,37.83519459361028, -122.22375098769724, 37.83497737882382));
     }
 }
